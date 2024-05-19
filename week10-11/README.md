@@ -26,7 +26,7 @@ make clean
 
 # Usage
 
-각 명령은 다른 터미널에서 실행되어져야 함.
+각 명령은 다른 터미널에서 실행되어져야 함(주의: ./server < test_server.txt 부터 실행되어져야 함!!!)
 
 ```bash
 ./server < test_server.txt
@@ -35,3 +35,15 @@ make clean
 ```bash
 ./client < test_client.txt
 ```
+
+만약 직접 해보고 싶다면, 각 터미널에서 아래 실행(주의: 위 ./server 부터 실행해야 함!!!)
+
+```bash
+./server
+```
+
+```bash
+./client
+```
+
+이 후 server 부터 입력하여 시작.
