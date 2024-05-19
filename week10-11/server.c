@@ -24,11 +24,11 @@ int main() {
 	sem_unlink(SEM_NAME);
 	sem_unlink(SEM_NAME3);
 
-	if((sem = sem_open(SEM_NAME, O_CREAT, 0644, 1)) == SEM_FAILED) {
+	if((sem = sem_open(SEM_NAME, O_CREAT, 0644, 0)) == SEM_FAILED) {
 		perror("sem_open() error");
 		return -1;
 	}
-	if((sem3 = sem_open(SEM_NAME3, O_CREAT, 0644, 1)) == SEM_FAILED) {
+	if((sem3 = sem_open(SEM_NAME3, O_CREAT, 0644, 0)) == SEM_FAILED) {
 		perror("sem_open() error");
 		return -1;
 	}
@@ -44,7 +44,6 @@ int main() {
         }
 
         while (1) {
-		sem_wait(sem);
                 memset(buf, 0x00, BUF_SIZE);
                 printf("Your turn!\n");
                 fgets(buf, BUF_SIZE, stdin); // give an answer to client
@@ -55,19 +54,18 @@ int main() {
                         score -= 20;
                 }
 
-		sem_post(sem);
+		sem_post(sem3);
 
-		sem_wait(sem3);
+		sem_wait(sem);
                 memset(buf, 0x00, BUF_SIZE);
                 read(recvfd, buf, BUF_SIZE); // get client's answer
 
+                printf("[opponent] %s", buf);
                 if (--cnt == 0) { // if break before client end, client's fifo conenction will be lost
                                   // for that, break check is inserted after get client's answer == client's end
                         break;
                 }
 
-                printf("[opponent] %s", buf);
-		sem_post(sem3);
         }
 
         printf("Done! Your score : %d\n", score);

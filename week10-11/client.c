@@ -21,11 +21,11 @@ int main() {
 	sem_t* sem;
 	sem_t* sem3;
 
-	if ((sem = sem_open(SEM_NAME, O_CREAT, 0644, 1)) == SEM_FAILED) {
+	if ((sem = sem_open(SEM_NAME, O_CREAT, 0644, 0)) == SEM_FAILED) {
 		perror("sem_open() error");
 		return -1;
 	}
-	if ((sem3 = sem_open(SEM_NAME3, O_CREAT, 0644, 1)) == SEM_FAILED) {
+	if ((sem3 = sem_open(SEM_NAME3, O_CREAT, 0644, 0)) == SEM_FAILED) {
 		perror("sem_open() error");
 		return -1;
 	}
@@ -43,9 +43,7 @@ int main() {
                 memset(buf, 0x00, BUF_SIZE);
                 read(recvfd, buf, BUF_SIZE); // read server's answer
                 printf("[opponent] %s", buf);
-		sem_post(sem3);
 
-		sem_wait(sem);
                 memset(buf, 0x00, BUF_SIZE);
                 printf("Your turn!\n");
                 fgets(buf, BUF_SIZE, stdin); // get client's answer
@@ -55,10 +53,10 @@ int main() {
                         printf("wrong! -20\n");
                         score -= 20; // -20 point
                 }
+		sem_post(sem);
                 if (--cnt == 0) { // if 5 times passed, break
                         break;
                 }
-		sem_post(sem);
         }
 
         printf("Done! Your score : %d\n", score); // show result
