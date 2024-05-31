@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <setjmp.h>
+#include <stdlib.h>
 
 #include <malloc.h>
 #include <memory.h>
@@ -134,7 +135,16 @@ void thread_switch(int unused)
 // scheduler : function that select next task
 void scheduler(void) {
 	/* TODO fill this section */
-
+	TaskStatus stat = gh_sch.running_task->status;
+	if (stat == TASK_RUN || stat == TASK_SLEEP) {
+		task_next();
+	} else if (stat == TASK_KILL) {
+		task_delete(gh_sch.running_task);
+		scheduler();
+	} else if (stat == TASK_YIELD || stat == TASK_READY) {
+		gh_sch.running_task->status = TASK_RUN;
+		task_next();
+	}
 }
 
 void thread_wait(void) {
@@ -144,7 +154,8 @@ void thread_wait(void) {
 // thread_kill : function that change task status to TASK_KILL
 void thread_kill(void) {
 	/* TODO fill this section */
-
+	gh_sch.running_task->status = TASK_KILL;
+	thread_switch(0);
 }
 
 void thread_uninit(void) {
@@ -170,25 +181,60 @@ void parent_task(void *context) {
 	sigaction(SIGUSR1, &act, NULL);
 
 	/* TODO fill this section */
+	pid = fork();
 
+    if (pid < 0) {
+        // Fork failed
+        perror("fork");
+        exit(-1);
+    } else if (pid == 0) {
+        // Child process
+        while (1) {
+            sleep(2);
+			kill(getppid(), SIGUSR1);
+        }
+    } else {
+        // Parent process
+        while (1) {
+            if (gh_sch.child_task == 1) {
+				kill(pid, SIGINT);
+				wait(0);
+			}
+        }
+    }
 }
 
 // task_insert : function that insert new taskinfo to linkedlist
 void task_insert(TaskInfo task) {
 	/* TODO fill this section */
-
+	if (gh_sch.root_task == NULL) {
+		gh_sch.root_task = task;
+	} else {
+		TaskInfo last_task = gh_sch.root_task;
+		for (int i = 0; i < gh_sch.child_task-1; i++) {
+			last_task = last_task->next;
+		}
+		last_task->next = task;
+		task->prev = last_task;
+	}
+	gh_sch.child_task++;
 }
 
 // task_get_running_task : function that return task pointed gh_sch.running_task in linkedlist
 TaskInfo task_get_running_task(void) {
 	/* TODO fill this section */
-
+	return gh_sch.running_task;
 }
 
 // task_next : function that return next task pointed gh_sch.running_task in linkedlist
 void task_next(void) {
 	/* TODO fill this section */
-
+	TaskInfo task = task_get_running_task();
+	if (task->next == NULL) {
+		gh_sch.running_task = gh_sch.root_task;
+	} else {
+		gh_sch.running_task = task->next;
+	}
 }
 
 // task_delete : function that delete task in linkedlist
