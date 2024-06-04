@@ -183,25 +183,25 @@ void parent_task(void *context) {
 	/* TODO fill this section */
 	pid = fork();
 
-    if (pid < 0) {
+    	if (pid < 0) {
         // Fork failed
-        perror("fork");
-        exit(-1);
-    } else if (pid == 0) {
+        	perror("fork");
+        	exit(-1);
+    	} else if (pid == 0) {
         // Child process
-        while (1) {
-            sleep(2);
+        	while (1) {
+            		sleep(2);
 			kill(getppid(), SIGUSR1);
-        }
-    } else {
+        	}
+    	} else {
         // Parent process
-        while (1) {
-            if (gh_sch.child_task == 1) {
+        	while (1) {
+            		if (gh_sch.child_task == 1) {
 				kill(pid, SIGINT);
 				wait(0);
 			}
-        }
-    }
+        	}
+	}
 }
 
 // task_insert : function that insert new taskinfo to linkedlist
@@ -211,13 +211,12 @@ void task_insert(TaskInfo task) {
 		gh_sch.root_task = task;
 	} else {
 		TaskInfo last_task = gh_sch.root_task;
-		for (int i = 0; i < gh_sch.child_task-1; i++) {
+		while (last_task->next != NULL) {
 			last_task = last_task->next;
 		}
 		last_task->next = task;
 		task->prev = last_task;
 	}
-	gh_sch.child_task++;
 }
 
 // task_get_running_task : function that return task pointed gh_sch.running_task in linkedlist
