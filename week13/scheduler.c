@@ -199,6 +199,7 @@ void parent_task(void *context) {
             		if (gh_sch.child_task == 1) {
 				kill(pid, SIGINT);
 				wait(0);
+				break;
 			}
         	}
 	}
@@ -209,6 +210,7 @@ void task_insert(TaskInfo task) {
 	/* TODO fill this section */
 	if (gh_sch.root_task == NULL) {
 		gh_sch.root_task = task;
+		gh_sch.running_task = task;
 	} else {
 		TaskInfo last_task = gh_sch.root_task;
 		while (last_task->next != NULL) {
