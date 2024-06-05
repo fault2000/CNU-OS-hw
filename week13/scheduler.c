@@ -134,7 +134,6 @@ void thread_switch(int unused)
 
 // scheduler : function that select next task
 void scheduler(void) {
-	/* TODO fill this section */
 	TaskStatus stat = gh_sch.running_task->status;
 	if (stat == TASK_RUN || stat == TASK_SLEEP) {
 		task_next();
@@ -153,7 +152,6 @@ void thread_wait(void) {
 
 // thread_kill : function that change task status to TASK_KILL
 void thread_kill(void) {
-	/* TODO fill this section */
 	gh_sch.running_task->status = TASK_KILL;
 	thread_switch(0);
 }
@@ -207,7 +205,6 @@ void parent_task(void *context) {
 
 // task_insert : function that insert new taskinfo to linkedlist
 void task_insert(TaskInfo task) {
-	/* TODO fill this section */
 	if (gh_sch.root_task == NULL) {
 		gh_sch.root_task = task;
 		gh_sch.running_task = task;
@@ -223,7 +220,6 @@ void task_insert(TaskInfo task) {
 
 // task_get_running_task : function that return task pointed gh_sch.running_task in linkedlist
 TaskInfo task_get_running_task(void) {
-	/* TODO fill this section */
 	return gh_sch.running_task;
 }
 
